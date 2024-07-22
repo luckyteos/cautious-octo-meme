@@ -1,0 +1,151 @@
+<head>
+    <style> body { margin: 0; } </style>
+  
+    <script src="//unpkg.com/d3-dsv"></script>
+    <script src="//unpkg.com/index-array-by"></script>
+  
+    <script src="//unpkg.com/globe.gl"></script>
+    <!--<script src="../../dist/react-globe.gl.js"></script>-->
+</head>
+
+<body>
+  <div id="globeViz"></div>
+    <script>
+
+      const OPACITY = 0.22;
+
+        const myGlobe = Globe();
+        myGlobe(document.getElementById('globeViz'))
+          .globeImageUrl('//unpkg.com/three-globe/example/img/earth-night.jpg')
+          .pointOfView({ lat: 1.35, lng: 103.81, altitude: 2 })
+          .arcLabel(d => `${d.srcCountry} &#8594; ${d.dstCountry}`)
+          .arcStartLat(d => +d.srcCoords[0])
+          .arcStartLng(d => +d.srcCoords[1])
+          .arcEndLat(d => +d.dstCoords[0])
+          .arcEndLng(d => +d.dstCoords[1])
+          .arcDashLength(0.25)
+          .arcDashGap(1)
+          .arcDashInitialGap(() => Math.random())
+          .arcDashAnimateTime(5000)
+          .arcColor(d => (d.direction === "incoming") ? `rgba(255, 0, 0, ${OPACITY})` : `rgba(0,255,0, ${OPACITY})`)
+          .arcStroke(d => 0.005 * d.attacksCount)
+          .arcsTransitionDuration(0)
+          .labelLat(d => d.countryCoords[0])
+          .labelLng(d => d.countryCoords[1])
+          .labelText(d => d.cityName)
+          .labelColor(() => 'rgba(255, 165, 0, 0.75)')
+          .labelResolution(2)
+          .labelSize(1)
+          .labelDotRadius(0.7)
+          .ringColor(() => "#e50000")
+          .ringMaxRadius(5)
+          .ringLat(d => d.lat)
+          .ringLng(d => d.lng);
+        // .pointColor(() => 'orange')
+        // .pointAltitude(0)
+        // .pointRadius(0.02)
+        // .pointsMerge(true);
+
+          myGlobe.controls().autoRotate = true;
+          myGlobe.controls().autoRotateSpeed = 3.0;
+
+      
+          console.log("Hi");
+          const attacks = new Map();
+          const cities = new Map();
+          let attackCoords = [];
+          let changeOp = true;
+
+          fetch("./attacks.json")
+            .then((response) => response.json())
+            .then(json => {
+              json.forEach(element => {
+                const id = element.from_country + "-" + element.to_country + "-" + element.direction.substring(0, 2);
+                if (attacks.has(id) === false) {
+                  var attacksInfo = { "srcCountry": element.from_label, "dstCountry": element.to_label, "srcCoords": [element.from_lat, element.from_lng], "dstCoords": [element.to_lat, element.to_lng], "direction": element.direction, "attacksCount": 1 };
+                  attacks.set(id, attacksInfo);
+                } else if (attacks.has(id)) {
+                  attacks.get(id).attacksCount += 1;
+                }
+                if (cities.has(element.from_country) === false) {
+                  cities.set(element.from_label, { "cityName": element.from_label, "countryCode": element.from_country, "countryCoords": [element.from_lat, element.from_lng] });
+                } else if (cities.has(element.to_country) === false) {
+                  cities.set(element.to_label, { "cityName": element.to_label, "countryCode": element.to_country, "countryCoords": [element.to_lat, element.to_lng] });
+                }
+                if (attackCoords.includes({ "lat": element.to_lat, "lng": element.to_lng }) === false) {
+                  attackCoords.push({ "lat": element.to_lat, "lng": element.to_lng });
+                }
+              });
+              console.log(attacks);
+
+              const attacksData = Array.from(attacks.values());
+              console.log(attacksData);
+              const cityData = Array.from(cities.values());
+              myGlobe.labelsData(cityData);
+
+              myGlobe.arcsData(attacksData);
+
+              setInterval(() => {
+                  if (changeOp) {
+                      myGlobe.arcsData([]);
+                      console.log(attackCoords.length);
+                      let randNums = generateRandomNumbers(attackCoords.length);
+                      let randoms = [];
+                      console.log(randoms);
+                      randNums.forEach((el) => {
+                          randoms.push(attackCoords[el]);
+                      });
+                      myGlobe.ringsData(randoms);
+                      changeOp = false;
+                  } else if (changeOp === false) {
+                      myGlobe.ringsData([]);
+                      setTimeout(() => {
+                        myGlobe.arcsData(attacksData);
+                      }, 6000);
+                      changeOp = true;
+                  }
+              }, 30000);
+            
+              // myGlobe.ringsData([]);
+              // let numbers = generateRandomNumbers(attacksData.length);
+              // let data1 = [];
+              // let data2 = [];
+              // numbers.forEach((num) => {
+              //   data1.push(attacksData[num]);
+              //   data2.push(attackCoords[num]);
+              // });
+              // console.log(data1);
+              // console.log(data2);
+              // myGlobe.arcsData(data1);
+              // myGlobe.ringsData(data2);
+            });
+      
+          // setTimeout(() => {
+          //   myGlobe.arcsData([]);
+          //   myGlobe.ringsData(attackCoords);
+          //   myGlobe
+          //   .ringColor(() => "#ffa500")
+          //   .ringMaxRadius(5)
+          //   .ringLat(d => d.lat)
+          //   .ringLng(d => d.lng);
+          // }, 6000);
+          
+           //ringsData(attacksData);
+      // });
+
+      function generateRandomNumbers(attacksLen) {
+          let numbers = new Set();
+
+          while (numbers.size < 10) {
+            let random = Math.floor(Math.random() * attacksLen);
+            console.log(random);
+            numbers.add(random);
+            console.log(numbers);
+          }
+
+          console.log(numbers);
+          return numbers;
+      }
+    </script>
+</body>
+
