@@ -72,11 +72,16 @@
                 } else if (cities.has(element.to_country) === false) {
                   cities.set(element.to_label, { "cityName": element.to_label, "countryCode": element.to_country, "countryCoords": [element.to_lat, element.to_lng] });
                 }
-                if (attackCoords.includes({ "lat": element.to_lat, "lng": element.to_lng }) === false) {
-                  attackCoords.push({ "lat": element.to_lat, "lng": element.to_lng });
+                console.log([element.to_lat, element.to_lng]);
+
+                if (checkObjectExists({ "lat": element.to_lat, "lng": element.to_lng }, attackCoords) === false) {
+                    console.log(attackCoords.includes({ "lat": element.to_lat, "lng": element.to_lng }));
+                    console.log([element.to_lat, element.to_lng]);
+                    attackCoords.push({ "lat": element.to_lat, "lng": element.to_lng });
                 }
               });
               console.log(attacks);
+              console.log(attackCoords);
 
               const attacksData = Array.from(attacks.values());
               console.log(attacksData);
@@ -88,14 +93,9 @@
               setInterval(() => {
                   if (changeOp) {
                       myGlobe.arcsData([]);
-                      console.log(attackCoords.length);
-                      let randNums = generateRandomNumbers(attackCoords.length);
-                      let randoms = [];
-                      console.log(randoms);
-                      randNums.forEach((el) => {
-                          randoms.push(attackCoords[el]);
-                      });
-                      myGlobe.ringsData(randoms);
+                      setTimeout(() => {
+                        myGlobe.ringsData(attackCoords);
+                      }, 6000);
                       changeOp = false;
                   } else if (changeOp === false) {
                       myGlobe.ringsData([]);
@@ -145,6 +145,10 @@
 
           console.log(numbers);
           return numbers;
+      }
+
+      function checkObjectExists(obj, list) {
+          return list.some(el => el.lat === obj.lat && el.lng === obj.lng);
       }
     </script>
 </body>
