@@ -1,0 +1,35 @@
+[
+    {
+        "from_lat": 61.5240,
+        "from_lng": 105.3188,
+        "from_label": "Moscow",
+        "from_country": "ru",
+        "to_lat": 1.3521,
+        "to_lng": 103.8198,
+        "to_label": "Singapore",
+        "to_country": "sg",
+        "direction": "incoming"
+    },
+    {
+        "from_lat": 1.3521,
+        "from_lng": 103.8198,
+        "from_label": "Singapore",
+        "from_country": "sg",
+        "to_lat": 1.3521,
+        "to_lng": 103.8198,
+        "to_label": "Singapore",
+        "to_country": "sg",
+        "direction": "outgoing"
+    },
+    {
+        "from_lat": 19.076,
+        "from_lng": 72.8777,
+        "from_label": "Mumbai",
+        "from_country": "in",
+        "to_lat": 1.3521,
+        "to_lng": 103.8198,
+        "to_label": "Singapore",
+        "to_country": "sg",
+        "direction": "incoming"
+    }
+]

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Globe with Arcs and Rings</title>
+    <style>
+      body {
+        margin: 0;
+      }
+      canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="https://unpkg.com/globe.gl"></script>
+    <script>
+      const globe = Globe()
+        (document.body)
+        .globeImageUrl('//unpkg.com/three-globe/example/img/earth-night.jpg')
+        .backgroundImageUrl('//unpkg.com/three-globe/example/img/night-sky.png')
+        .arcColor('color')
+        .arcDashLength(0.3)
+        .arcDashGap(0.1)
+        .arcDashInitialGap(() => Math.random())
+        .arcDashAnimateTime(2000)
+        .ringColor(() => 'rgba(255, 0, 0, 0.5)')
+        .ringMaxRadius(20)
+        .ringPropagationSpeed(1)
+        .ringRepeatPeriod(1000);
+
+      // Sample data for arcs
+      const arcsData = [
+        { startLat: 37.7749, startLng: -122.4194, endLat: 40.7128, endLng: -74.006, color: 'rgba(255, 165, 0, 0.75)' },
+        { startLat: 34.0522, startLng: -118.2437, endLat: 51.5074, endLng: -0.1278, color: 'rgba(0, 255, 0, 0.75)' },
+        { startLat: 35.6895, startLng: 139.6917, endLat: 55.7558, endLng: 37.6173, color: 'rgba(0, 0, 255, 0.75)' }
+      ];
+
+      // Sample data for rings
+      const ringsData = [
+        { lat: 37.7749, lng: -122.4194 },
+        { lat: 34.0522, lng: -118.2437 },
+        { lat: 40.7128, lng: -74.0060 }
+      ];
+
+      globe
+        .arcsData(arcsData)
+        .arcStartLat(d => d.startLat)
+        .arcStartLng(d => d.startLng)
+        .arcEndLat(d => d.endLat)
+        .arcEndLng(d => d.endLng)
+        .arcColor(d => d.color)
+        .ringsData(ringsData)
+        .ringLat(d => d.lat)
+        .ringLng(d => d.lng);
+    </script>
+  </body>
+</html>
