@@ -1,0 +1,10 @@
+services:
+  globe-viz:
+    build: .
+    ports:
+      - "8000:8080"
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 12gb
